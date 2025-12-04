@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro | NoteFlow</title>
+    <link rel="stylesheet" href="/static/formulario.css">
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formRegistro = document.querySelector('form[action="/procesar-registro"]');
+    
+    if (formRegistro) {
+        formRegistro.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const btnText = submitBtn.textContent;
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Registrando...';
+            
+            try {
+                const response = await fetch('/procesar-registro', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('¡Registro exitoso!');
+                    window.location.href = data.redirect;
+                } else {
+                    alert(data.error || 'Error al registrar usuario');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = btnText;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error de conexión');
+                submitBtn.disabled = false;
+                submitBtn.textContent = btnText;
+            }
+        });
+    }
+});
+</script>
+
+
+
+
+</head>
+<body>
+    <form class="formulario" action="/procesar-registro" method="POST">
+        <nav>
+            <ul class="formulario-ul">
+                <li class="li-formulario"><a href="/iniciarsesion.html">Iniciar Sesión</a></li>
+                <li class="li-formulario"><a href="/registro.html" class="activo">Registro</a></li>
+            </ul>
+        </nav>
+
+        <h2 class="h2-registro">REGISTRO</h2>
+
+        <section class="inputs">
+            <label>Nombre completo</label>
+            <input type="text" name="nombre" placeholder="Ingresa tu nombre completo" required>
+
+            <label>Apellido completo</label>
+            <input type="text" name="apellido" placeholder="Ingresa tu apellido completo" required>
+
+            <label>Teléfono</label>
+            <input type="tel" name="telefono" placeholder="Ej: 3123456789" required>
+
+            <label>Correo electrónico</label>
+            <input type="email" name="correo" placeholder="correo@ejemplo.com" required>
+
+            <label>Apodo o alias</label>
+            <input type="text" name="usuario" placeholder="Ej: Notero123" required>
+
+            <label>Contraseña</label>
+            <input type="password" name="contraseña" placeholder="Crear una contraseña" required>
+        </section>
+
+        <button type="submit">Crear cuenta</button>
+
+        <p>¿Ya tienes una cuenta? <a href="/iniciarsesion.html">Iniciar sesión</a></p>
+    </form>
+</body>
+</html>
